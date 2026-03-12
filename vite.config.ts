@@ -72,7 +72,8 @@ export default defineConfig(({ command, mode }) => {
         mockPath: './mock/',
         supportTs: true,
         watchFiles: true,
-        localEnabled: command === 'serve',
+        // dev:backend 模式下关闭 mock，使用真实后端
+        localEnabled: command === 'serve' && mode !== 'dev_backend',
         prodEnabled: command !== 'serve' && prodMock,
         // configPath: './mock/index.js',
         logger: false,
@@ -91,7 +92,38 @@ export default defineConfig(({ command, mode }) => {
           headers: {
             Cookie: env.VITE_COOKIE
           }
-        }
+        },
+        // 以下代理规则在 dev:backend 模式下将 API 转发到 FastAPI 后端
+        ...(mode === 'dev_backend' ? {
+          '/vue-element-admin': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          },
+          '/device': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          },
+          '/person_device': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          },
+          '/person': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          },
+          '/file': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          },
+          '/files': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          },
+          '/qiniu': {
+            target: 'http://localhost:8000',
+            changeOrigin: true
+          }
+        } : {})
       }
     }
   };

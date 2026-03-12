@@ -3,15 +3,14 @@
     <div class="login-box">
       <div class="logo-section">
         <div class="logo-container">
-          <img src="/University_of_Science_and_Technology_Beijing_logo.svg.png" alt="USTB Logo" class="school-logo" />
+          <img src="@/assets/logo.svg" alt="USTB Logo" class="school-logo" />
           <h1 class="system-title">辐射设备管理系统</h1>
           <h2 class="school-name">北京科技大学</h2>
           <p class="system-desc">Radiation Device Management System</p>
         </div>
       </div>
       
-      <div class="form-wrapper">
-        <div class="form-section">
+      <div class="form-section">
         <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on"
                  label-position="left">
 
@@ -52,7 +51,6 @@
         
         <div class="footer-info">
           <p>© 2025 北京科技大学 辐射设备管理系统</p>
-        </div>
         </div>
       </div>
     </div>
@@ -136,6 +134,8 @@ const handleLogin = () => {
         loading.value = false;
         ElMessage.error('登录失败，请检查用户名和密码');
       }
+    } else {
+      return false;
     }
   });
 };
@@ -173,62 +173,57 @@ $dark_gray: #889aa4;
 .login-container {
   min-height: 100vh;
   width: 100%;
-  background-image: url('/USTB.jpg');
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: cover;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   overflow: hidden;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 60px;
+  justify-content: center;
   
   .login-box {
     display: flex;
-    width: 650px;
-    height: 420px;
-    background: rgba(255, 255, 255, 0.92);
-    border-radius: 12px;
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+    width: 900px;
+    height: 500px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    backdrop-filter: blur(10px);
     
     .logo-section {
-      flex: 0.9;
-      background: linear-gradient(135deg, rgba(40, 52, 67, 0.8), rgba(60, 80, 100, 0.8));
+      flex: 1;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 30px 25px;
+      padding: 40px;
       
       .logo-container {
         text-align: center;
         color: white;
         
         .school-logo {
-          width: 100px;
-          height: 100px;
-          margin-bottom: 15px;
+          width: 120px;
+          height: 120px;
+          margin-bottom: 20px;
           background: white;
           border-radius: 50%;
-          padding: 8px;
+          padding: 10px;
         }
         
         .system-title {
-          font-size: 22px;
+          font-size: 28px;
           font-weight: bold;
-          margin-bottom: 8px;
-          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+          margin-bottom: 10px;
+          text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .school-name {
-          font-size: 16px;
-          margin-bottom: 6px;
+          font-size: 20px;
+          margin-bottom: 10px;
           font-weight: 500;
         }
         
         .system-desc {
-          font-size: 12px;
+          font-size: 14px;
           opacity: 0.9;
           font-style: italic;
         }
@@ -236,8 +231,8 @@ $dark_gray: #889aa4;
     }
     
     .form-section {
-      flex: 1.2;
-      padding: 35px;
+      flex: 1.5;
+      padding: 40px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -261,10 +256,6 @@ $dark_gray: #889aa4;
           background: #f5f7fa;
           border-radius: 5px;
           margin-bottom: 22px;
-          position: relative;
-          height: 47px;
-          display: flex;
-          align-items: center;
         }
         
         .svg-container {
@@ -272,37 +263,30 @@ $dark_gray: #889aa4;
           color: $dark_gray;
           vertical-align: middle;
           width: 30px;
-          display: inline-flex;
-          align-items: center;
-          flex-shrink: 0;
+          display: inline-block;
         }
         
         :deep(.el-input) {
-          display: flex;
-          align-items: center;
-          flex: 1;
-          height: 100%;
+          display: inline-block;
+          height: 47px;
+          width: 85%;
 
           input {
             background: transparent;
             border: 0;
-            appearance: none;
             -webkit-appearance: none;
             border-radius: 0;
-            padding: 12px 5px 12px 5px;
+            padding: 12px 5px 12px 15px;
             color: #333;
-            height: 100%;
-            font-size: 14px;
-            width: 100%;
+            height: 47px;
             caret-color: #409eff;
           }
         }
         
         .show-pwd {
           position: absolute;
-          right: 15px;
-          top: 50%;
-          transform: translateY(-50%);
+          right: 10px;
+          top: 7px;
           font-size: 16px;
           color: $dark_gray;
           cursor: pointer;
@@ -337,17 +321,13 @@ $dark_gray: #889aa4;
   }
   
   @media only screen and (max-width: 1024px) {
-    justify-content: center;
-    padding-right: 20px;
-    
     .login-box {
-      width: 85%;
-      max-width: 600px;
+      width: 90%;
       flex-direction: column;
       height: auto;
       
       .logo-section {
-        padding: 25px;
+        padding: 30px;
       }
       
       .form-section {
