@@ -19,7 +19,7 @@
         <el-table-column label="操作" width="300" align="center">
           <template #default="scope">
             <el-button size="small" @click="viewFile(scope.row)">查看</el-button>
-            <el-button size="small" type="success" @click="downloadFile(scope.row)">下载</el-button>
+            <el-button size="small" type="success" @click="triggerDownload(scope.row)">下载</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -27,7 +27,13 @@
 
     <!-- 文件查看对话框 -->
     <el-dialog v-model="viewDialogVisible" :title="`查看文件: ${currentFile.file_name}`" width="70%">
-      <div v-if="currentFile.file_type === 'txt'" class="file-content-preview">
+      <div v-if="currentFile.file_type === 'pdf' && currentFile.file_download_url" class="file-content-preview">
+        <iframe :src="currentFile.previewUrl" style="width: 100%; height: 70vh; border: none;" />
+      </div>
+      <div v-else-if="['png','jpg','jpeg','gif','bmp','webp','svg'].includes(currentFile.file_type) && currentFile.file_download_url" class="file-content-preview" style="text-align:center;">
+        <img :src="currentFile.previewUrl" style="max-width: 100%; max-height: 70vh;" />
+      </div>
+      <div v-else-if="currentFile.file_type === 'txt'" class="file-content-preview">
         <pre>{{ currentFile.file_content }}</pre>
       </div>
       <div v-else class="file-content-placeholder">
@@ -39,7 +45,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getFileList } from '@/api/file';
+import { getFileList, getFileDownloadFullURL } from '@/api/file';
 import type { FileInfo } from '@/api/file';
 import { ElMessage } from 'element-plus';
 import { export_json_to_excel } from '@/vendor/Export2Excel';
@@ -49,7 +55,9 @@ const viewDialogVisible = ref(false);
 const currentFile = ref({
   file_name: '',
   file_type: '',
-  file_content: ''
+  file_content: '',
+  file_download_url: '',
+  previewUrl: ''
 });
 
 onMounted(() => {
@@ -74,17 +82,30 @@ const formatFileSize = (bytes: number | undefined) => {
 };
 
 const viewFile = (file: any) => {
+  const previewUrl = file.file_download_url ? getFileDownloadFullURL(file.file_download_url) : '';
   currentFile.value = {
     file_name: file.file_name,
     file_type: file.file_type,
-    file_content: file.file_content || '暂无内容'
+    file_content: file.file_content || '暂无内容',
+    file_download_url: file.file_download_url || '',
+    previewUrl
   };
   viewDialogVisible.value = true;
 };
 
-const downloadFile = (file: any) => {
-  ElMessage.info(`下载文件: ${file.file_name}`);
-  // 这里可以实现真实的文件下载逻辑
+const triggerDownload = (file: any) => {
+  if (file.file_download_url) {
+    const url = getFileDownloadFullURL(file.file_download_url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.file_name || 'download';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    ElMessage.warning('该文件没有下载链接');
+  }
 };
 
 const handleExport = () => {

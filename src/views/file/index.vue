@@ -80,8 +80,13 @@
             action="#"
             :auto-upload="false"
             :on-change="handleFileChange"
+            :limit="1"
+            :file-list="uploadFileList"
           >
             <el-button size="small" type="primary">选择文件</el-button>
+            <template #tip>
+              <div class="el-upload__tip">支持任意格式文件上传</div>
+            </template>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -97,7 +102,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
-import { getFileList, addFile, updateFile, deleteFile, downloadFile, type FileInfo } from '@/api/file';
+import { getFileList, uploadFileMultipart, updateFile, deleteFile, getFileDownloadFullURL, type FileInfo } from '@/api/file';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { export_json_to_excel } from '@/vendor/Export2Excel';
 
@@ -124,6 +129,9 @@ const temp = ref<FileInfo>({
   file_ownership_idx: undefined,
   file_remark: ''
 });
+
+const selectedFile = ref<File | null>(null);
+const uploadFileList = ref([]);
 
 onMounted(() => {
   getList();
@@ -173,24 +181,37 @@ const resetTemp = () => {
 
 const handleCreate = () => {
   resetTemp();
+  selectedFile.value = null;
+  uploadFileList.value = [];
   dialogStatus.value = 'create';
   dialogFormVisible.value = true;
 };
 
 const handleFileChange = (file: any) => {
+  selectedFile.value = file.raw;
   temp.value.file_name = file.name;
   temp.value.file_size = file.size;
   temp.value.file_type = file.name.split('.').pop() || '';
 };
 
 const createData = async () => {
+  if (!selectedFile.value) {
+    ElMessage.warning('请先选择文件');
+    return;
+  }
   try {
-    await addFile(temp.value);
+    await uploadFileMultipart(
+      selectedFile.value,
+      temp.value.file_ownership_idx,
+      temp.value.file_remark
+    );
     dialogFormVisible.value = false;
-    ElMessage.success('创建成功');
+    selectedFile.value = null;
+    uploadFileList.value = [];
+    ElMessage.success('上传成功');
     getList();
   } catch (error) {
-    ElMessage.error('创建失败');
+    ElMessage.error('上传失败');
   }
 };
 
@@ -225,17 +246,19 @@ const handleDelete = (row: any) => {
   });
 };
 
-const handleDownload = async (row: any) => {
-  try {
-    const fileData = row.row || row;
-    if (fileData.file_download_url) {
-      await downloadFile(fileData.file_download_url);
-      ElMessage.success('下载成功');
-    } else {
-      ElMessage.warning('该文件没有下载链接');
-    }
-  } catch (error) {
-    ElMessage.error('下载失败');
+const handleDownload = (row: any) => {
+  const fileData = row.row || row;
+  if (fileData.file_download_url) {
+    const url = getFileDownloadFullURL(fileData.file_download_url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileData.file_name || 'download';
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    ElMessage.warning('该文件没有下载链接');
   }
 };
 

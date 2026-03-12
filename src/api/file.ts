@@ -77,6 +77,24 @@ export function deleteFile(file_id: number) {
   });
 }
 
+export function uploadFileMultipart(file: File, fileOwnershipIdx?: number, fileRemark?: string) {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (fileOwnershipIdx !== undefined && fileOwnershipIdx !== null) {
+    formData.append('file_ownership_idx', String(fileOwnershipIdx));
+  }
+  if (fileRemark) {
+    formData.append('file_remark', fileRemark);
+  }
+  return request({
+    url: '/file/upload-multipart/',
+    method: 'post',
+    headers: { 'Content-Type': 'multipart/form-data' },
+    data: formData,
+    timeout: 60000 // 文件上传超时60s
+  });
+}
+
 export function downloadFile(downloadURL: string) {
   return request({
     url: downloadURL,
@@ -89,4 +107,14 @@ export function getFileContent(file_id: number) {
     url: `/file/files/${file_id}`,
     method: 'get'
   });
+}
+
+/**
+ * 获取文件的完整下载URL（用于浏览器直接下载/预览）
+ */
+export function getFileDownloadFullURL(fileDownloadUrl: string): string {
+  // fileDownloadUrl 格式如 /files/xxxxx.pdf
+  const baseApi = import.meta.env.VITE_BASE_API || '/';
+  const base = baseApi.endsWith('/') ? baseApi.slice(0, -1) : baseApi;
+  return `${base}${fileDownloadUrl}`;
 }

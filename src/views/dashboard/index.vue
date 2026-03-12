@@ -13,6 +13,21 @@
       </el-card>
     </div>
 
+    <!-- 公告栏 -->
+    <div class="notice-banner">
+      <el-card class="notice-card">
+        <div class="notice-content">
+          <div class="notice-header">
+            <el-icon><Bell /></el-icon>
+            <span>公告栏</span>
+          </div>
+          <div class="notice-body">
+            <!-- 公告内容区域 -->
+          </div>
+        </div>
+      </el-card>
+    </div>
+
     <!-- 统计卡片 -->
     <el-row :gutter="20" class="stats-row">
       <el-col :xs="24" :sm="12" :lg="6">
@@ -329,6 +344,37 @@ onMounted(() => {
             color: #ffffff;
           }
 
+        }
+      }
+    }
+  }
+
+  .notice-banner {
+    margin-bottom: 20px;
+
+    .notice-card {
+      border: none;
+      border-left: 4px solid #409EFF;
+
+      :deep(.el-card__body) {
+        padding: 16px 20px;
+      }
+
+      .notice-content {
+        .notice-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          color: #409EFF;
+          margin-bottom: 10px;
+        }
+
+        .notice-body {
+          min-height: 40px;
+          color: #606266;
+          font-size: 14px;
         }
       }
     }

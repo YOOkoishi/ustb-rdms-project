@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "start": "vite --mode dev_backend",
     "dev:test": "vite --mode dev_test",
     "dev:prod": "vite --mode dev_prod",
-    "dev:backend": "vite --mode dev_backend",
     "build:test": "vite build --mode build_test",
     "build:prod": "vite build --mode build_prod",
     "preview": "vite preview --port 4173",
