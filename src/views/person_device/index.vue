@@ -3,7 +3,7 @@
     <el-card>
       <h3>负责人-设备关系管理</h3>
       <div class="filter-container">
-        <el-button class="filter-item" type="primary" @click="handleCreate">
+        <el-button v-permission="['admin']" class="filter-item" type="primary" @click="handleCreate">
           添加关系
         </el-button>
       </div>
@@ -33,7 +33,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center" width="150">
           <template #default="row">
-            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+            <el-button v-permission="['admin']" type="danger" size="small" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>

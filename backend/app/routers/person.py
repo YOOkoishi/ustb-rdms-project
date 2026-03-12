@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_db
+from app.dependencies import get_db, require_admin
+from app.models.user import User
 from app.models.person import Person
 from app.models.person_device import PersonDevice
 from app.schemas.person import PersonCreate, PersonUpdate, PersonOut
@@ -22,7 +23,7 @@ async def get_person_list(db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/person/persons/")
-async def add_person(body: PersonCreate, db: AsyncSession = Depends(get_db)):
+async def add_person(body: PersonCreate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """新增人员"""
     person = Person(
         person_name=body.person_name,
@@ -38,7 +39,7 @@ async def add_person(body: PersonCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.put("/person/persons/{person_idx}/")
-async def update_person(person_idx: int, body: PersonUpdate, db: AsyncSession = Depends(get_db)):
+async def update_person(person_idx: int, body: PersonUpdate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """更新人员"""
     result = await db.execute(select(Person).where(Person.person_idx == person_idx))
     person = result.scalar_one_or_none()
@@ -55,7 +56,7 @@ async def update_person(person_idx: int, body: PersonUpdate, db: AsyncSession = 
 
 
 @router.delete("/person/persons/{person_idx}/")
-async def delete_person(person_idx: int, db: AsyncSession = Depends(get_db)):
+async def delete_person(person_idx: int, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """删除人员及其关联关系"""
     result = await db.execute(select(Person).where(Person.person_idx == person_idx))
     person = result.scalar_one_or_none()

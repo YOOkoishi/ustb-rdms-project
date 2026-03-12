@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_db
+from app.dependencies import get_db, require_admin
+from app.models.user import User
 from app.models.device import Device
 from app.models.person_device import PersonDevice
 from app.schemas.device import DeviceCreate, DeviceUpdate, DeviceOut
@@ -22,7 +23,7 @@ async def get_device_list(db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/device/devices/")
-async def add_device(body: DeviceCreate, db: AsyncSession = Depends(get_db)):
+async def add_device(body: DeviceCreate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """新增设备"""
     device = Device(
         device_name=body.device_name,
@@ -43,7 +44,7 @@ async def add_device(body: DeviceCreate, db: AsyncSession = Depends(get_db)):
 
 
 @router.put("/device/devices/{device_idx}/")
-async def update_device(device_idx: int, body: DeviceUpdate, db: AsyncSession = Depends(get_db)):
+async def update_device(device_idx: int, body: DeviceUpdate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """更新设备"""
     result = await db.execute(select(Device).where(Device.device_idx == device_idx))
     device = result.scalar_one_or_none()
@@ -60,7 +61,7 @@ async def update_device(device_idx: int, body: DeviceUpdate, db: AsyncSession = 
 
 
 @router.delete("/device/devices/{device_idx}/")
-async def delete_device(device_idx: int, db: AsyncSession = Depends(get_db)):
+async def delete_device(device_idx: int, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """删除设备及其关联关系"""
     result = await db.execute(select(Device).where(Device.device_idx == device_idx))
     device = result.scalar_one_or_none()

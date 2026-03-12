@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from fastapi import Header, HTTPException
+from fastapi import Depends, Header, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -74,3 +74,18 @@ async def require_auth(
         raise HTTPException(status_code=200, detail={"code": 50008, "message": "用户不存在"})
 
     return user
+
+
+async def require_admin(
+    current_user: User = Depends(require_auth),
+) -> User:
+    """
+    管理员权限依赖，仅 roles 含 'admin' 的用户可通过。
+    普通用户（如 editor）调用写接口时返回 403 权限不足。
+    """
+    if not current_user.roles or "admin" not in current_user.roles:
+        raise HTTPException(
+            status_code=200,
+            detail={"code": 40003, "message": "权限不足，仅管理员可执行此操作"},
+        )
+    return current_user

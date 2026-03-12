@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.dependencies import get_db
+from app.dependencies import get_db, require_admin
+from app.models.user import User
 from app.models.person import Person
 from app.models.device import Device
 from app.models.person_device import PersonDevice
@@ -23,7 +24,7 @@ async def get_relation_list(db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/person_device/relations/")
-async def add_relation(body: PersonDeviceCreate, db: AsyncSession = Depends(get_db)):
+async def add_relation(body: PersonDeviceCreate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """新增人员-设备关联"""
     # 自动填充 person_name 和 device_name
     person_name = body.person_name or ""
@@ -59,7 +60,7 @@ async def add_relation(body: PersonDeviceCreate, db: AsyncSession = Depends(get_
 
 
 @router.delete("/person_device/relations/{relation_id}/")
-async def delete_relation(relation_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_relation(relation_id: int, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """删除人员-设备关联"""
     result = await db.execute(select(PersonDevice).where(PersonDevice.id == relation_id))
     relation = result.scalar_one_or_none()

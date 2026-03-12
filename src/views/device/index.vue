@@ -8,7 +8,7 @@
       <el-button class="filter-item" type="primary" @click="handleFilter">
         搜索
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="handleCreate">
+      <el-button v-permission="['admin']" class="filter-item" style="margin-left: 10px;" type="primary" @click="handleCreate">
         添加
       </el-button>
       <el-button class="filter-item" type="primary" @click="handleDownload">
@@ -60,9 +60,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template #default="row">
-          <el-button type="primary" size="small" @click="handleUpdate(row)">编辑</el-button>
+          <el-button v-permission="['admin']" type="primary" size="small" @click="handleUpdate(row)">编辑</el-button>
           <el-button type="success" size="small" @click="checkFile(row)">文件</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
+          <el-button v-permission="['admin']" type="danger" size="small" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

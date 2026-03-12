@@ -9,7 +9,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.dependencies import get_db
+from app.dependencies import get_db, require_admin
+from app.models.user import User
 from app.models.file import FileRecord
 from app.schemas.file import (
     FileCreate, FileUpdate, FilePatch,
@@ -29,7 +30,7 @@ async def get_file_list(db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/file/upload/")
-async def upload_file(body: FileCreate, db: AsyncSession = Depends(get_db)):
+async def upload_file(body: FileCreate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """
     上传文件（JSON body 方式，兼容前端 mock 行为）。
     如果需要上传真实文件，使用 POST /file/upload-multipart/
@@ -55,6 +56,7 @@ async def upload_file_multipart(
     file_ownership_idx: Optional[int] = None,
     file_remark: str = "",
     db: AsyncSession = Depends(get_db),
+    _: User = Depends(require_admin),
 ):
     """
     上传真实文件（multipart/form-data）。
@@ -92,7 +94,7 @@ async def upload_file_multipart(
 
 
 @router.put("/file/files/{file_idx}/")
-async def update_file(file_idx: int, body: FileUpdate, db: AsyncSession = Depends(get_db)):
+async def update_file(file_idx: int, body: FileUpdate, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """更新文件信息"""
     result = await db.execute(select(FileRecord).where(FileRecord.file_idx == file_idx))
     file_record = result.scalar_one_or_none()
@@ -109,7 +111,7 @@ async def update_file(file_idx: int, body: FileUpdate, db: AsyncSession = Depend
 
 
 @router.patch("/file/files/{file_idx}/")
-async def patch_file(file_idx: int, body: FilePatch, db: AsyncSession = Depends(get_db)):
+async def patch_file(file_idx: int, body: FilePatch, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """部分更新文件（如 file_download_url 或 file_ownership_idx）"""
     result = await db.execute(select(FileRecord).where(FileRecord.file_idx == file_idx))
     file_record = result.scalar_one_or_none()
@@ -126,7 +128,7 @@ async def patch_file(file_idx: int, body: FilePatch, db: AsyncSession = Depends(
 
 
 @router.delete("/file/files/{file_idx}/")
-async def delete_file(file_idx: int, db: AsyncSession = Depends(get_db)):
+async def delete_file(file_idx: int, db: AsyncSession = Depends(get_db), _: User = Depends(require_admin)):
     """删除文件"""
     result = await db.execute(select(FileRecord).where(FileRecord.file_idx == file_idx))
     file_record = result.scalar_one_or_none()

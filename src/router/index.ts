@@ -69,42 +69,6 @@ export const constantRoutes:RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/person_info',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        name: 'Person',
-        component: () => import('@/views/person/index.vue'),
-        meta: { title: '人员信息', icon: 'user' }
-      }
-    ]
-  },
-  {
-    path: '/person_device',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        name: 'PersonDevice',
-        component: () => import('@/views/person_device/index.vue'),
-        meta: { title: '负责人-设备', icon: 'peoples' }
-      }
-    ]
-  },
-  {
-    path: '/file',
-    component: Layout,
-    children: [
-      {
-        path: '',
-        name: 'File',
-        component: () => import('@/views/file/index.vue'),
-        meta: { title: '文件', icon: 'documentation' }
-      }
-    ]
-  },
-  {
     path: '/file/readfile',
     component: Layout,
     children: [
@@ -139,6 +103,45 @@ export const constantRoutes:RouteRecordRaw[] = [
  * 注意：hidden、alwaysShow 属性配置移动到了meta中！！！
  */
 export const asyncRoutes:RouteRecordRaw[] = [
+  {
+    path: '/person_info',
+    component: Layout,
+    meta: { roles: ['admin'] },
+    children: [
+      {
+        path: '',
+        name: 'Person',
+        component: () => import('@/views/person/index.vue'),
+        meta: { title: '人员信息', icon: 'user', roles: ['admin'] }
+      }
+    ]
+  },
+  {
+    path: '/person_device',
+    component: Layout,
+    meta: { roles: ['admin'] },
+    children: [
+      {
+        path: '',
+        name: 'PersonDevice',
+        component: () => import('@/views/person_device/index.vue'),
+        meta: { title: '负责人-设备', icon: 'peoples', roles: ['admin'] }
+      }
+    ]
+  },
+  {
+    path: '/file',
+    component: Layout,
+    meta: { roles: ['admin'] },
+    children: [
+      {
+        path: '',
+        name: 'File',
+        component: () => import('@/views/file/index.vue'),
+        meta: { title: '文件', icon: 'documentation', roles: ['admin'] }
+      }
+    ]
+  },
   // 404 page must be placed at the end !!!
   { path: '/:pathMatch(.*)*', redirect: '/404', meta: { hidden: true }}
 ];
