@@ -91,6 +91,18 @@
           <template #header>
             <div class="card-header">
               <span class="card-title">
+                <el-icon><InfoFilled /></el-icon>
+                相关信息
+              </span>
+            </div>
+          </template>
+          <div class="related-info-blank" />
+        </el-card>
+
+        <el-card class="content-card">
+          <template #header>
+            <div class="card-header">
+              <span class="card-title">
                 <el-icon><Files /></el-icon>
                 资质文件
               </span>
@@ -522,6 +534,10 @@ onMounted(() => {
             gap: 10px;
           }
         }
+      }
+
+      .related-info-blank {
+        min-height: 120px;
       }
 
       .notice-list {
